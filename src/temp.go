@@ -5,50 +5,44 @@ import (
 	"strconv"
 )
 
+var (
+	presets = map[string]int{
+		"minimal":     1000,
+		"candle":      2300,
+		"tungsten":    2700,
+		"halogen":     3400,
+		"fluorescent": 4200,
+		"daylight":    5000,
+		"default":     6500,
+		"maximal":     10000,
+	}
+)
+
 type Temp struct {
 	Value int
 	Name  string
 }
 
-var (
-	defTemp = Temp{6500, "default"}
-	minTemp = Temp{1000, "minimal"}
-	maxTemp = Temp{10000, "maximal"}
-	presets = []Temp{
-		{2300, "candle"},
-		{2700, "tungsten"},
-		{3400, "halogen"},
-		{4200, "fluorescent"},
-		{5000, "daylight"},
-	}
-)
-
-func (m *Temp) Set(s string) error {
-	for _, v := range presets {
-		if v.Name == s {
-			*m = v
-			return nil
+func (m *Temp) Set(s string) (t Temp, err error) {
+	if val, ok := presets[s]; ok {
+		t = Temp{
+			Name:  s,
+			Value: val,
 		}
-	}
-	i, err := strconv.Atoi(s)
-	if err != nil {
-		return err
-	}
-	if i < minTemp.Value || i > maxTemp.Value {
-		return fmt.Errorf("out of range")
-	}
-	*m = Temp{i, "manual"}
-	return nil
-}
+	} else {
 
-func (m Temp) String() string {
-	return fmt.Sprint(m.Value)
-}
-
-func (_ Temp) Usage() string {
-	s := fmt.Sprintf("color temperature in range %v..%v or", minTemp, maxTemp)
-	for _, v := range presets {
-		s += fmt.Sprintf(" %v", v.Name)
+		i, err := strconv.Atoi(s)
+		if err != nil {
+			return t, fmt.Errorf("can not parse int")
+		}
+		if i < presets["minimal"] || i > presets["maximal"] {
+			return t, fmt.Errorf(
+				"temp out of range, value needs to be between %v and %v",
+				presets["minimal"], presets["maximal"],
+			)
+		}
+		t.Name = "manual"
+		t.Value = i
 	}
-	return s
+	return
 }
