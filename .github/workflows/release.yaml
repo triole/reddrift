@@ -44,4 +44,4 @@ jobs:
                 env:
                     GITHUB_TOKEN: ${{ github.token }}
                 with:
-                    asset_paths: '["/tmp/assets/*"]'
+                    asset_paths: '["/tmp/gh_workflow_assets*"]'
