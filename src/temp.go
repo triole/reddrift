@@ -66,7 +66,7 @@ func setTemp() {
 	if err != nil {
 		fmt.Printf("%q\n", err)
 	} else {
-		fmt.Printf("Set color temperatur to %q %v\n", temp.Name, temp.Value)
+		fmt.Printf("Set colour temperature %q %v\n", temp.Name, temp.Value)
 		Set(temp.Value)
 	}
 }

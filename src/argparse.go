@@ -12,12 +12,12 @@ import (
 var (
 	BUILDTAGS      string
 	appName        = "sct"
-	appDescription = "set color temperature is a very simplt replacement for redshift"
+	appDescription = "set colour temperature is a very simplt replacement for redshift"
 	appMainversion = "0.1"
 )
 
 var CLI struct {
-	Temp        string `help:"color temp or preset to set" arg default:6500k`
+	Temp        string `help:"colour temp or preset to set" arg default:6500k`
 	Presets     bool   `help:"list available presets" short:p`
 	VersionFlag bool   `help:"display version" short:V`
 }
