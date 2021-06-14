@@ -14,6 +14,7 @@ var (
 		"fluorescent": 4200,
 		"daylight":    5000,
 		"default":     6500,
+		"upallnight":  8000,
 		"maximal":     10000,
 	}
 )
@@ -45,4 +46,27 @@ func (m *Temp) Set(s string) (t Temp, err error) {
 		t.Value = i
 	}
 	return
+}
+
+func listPresets() {
+	if CLI.Presets == true {
+		fmt.Println("\nAvailable presets")
+		hackedMap, hackedKeys := sortMapHack(presets)
+		for _, k := range hackedKeys {
+			fmt.Printf("%v\t%s\n", k, hackedMap[k])
+		}
+		fmt.Printf("\n")
+	}
+
+}
+
+func setTemp() {
+	temp := Temp{}
+	temp, err := temp.Set(CLI.Temp)
+	if err != nil {
+		fmt.Printf("%q\n", err)
+	} else {
+		fmt.Printf("Set color temperatur to %q %v\n", temp.Name, temp.Value)
+		Set(temp.Value)
+	}
 }

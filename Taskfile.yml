@@ -1,6 +1,17 @@
 version: '3'
 
 vars:
+    ARCHS_TO_BUILD: |
+        - linux_armv6l:GOOS=linux GOARCH=arm GOARM=6
+        - linux_armv7l:GOOS=linux GOARCH=arm GOARM=7
+        - linux_armv64:GOOS=linux GOARCH=arm64
+        - linux_i686:GOOS=linux GOARCH=386
+        - linux_x86_64:GOOS=linux GOARCH=amd64
+        - freebsd_arm64:GOOS=freebsd GOARCH=arm64
+        - freebsd_i686:GOOS=freebsd GOARCH=386
+        - freebsd_x86_64:GOOS=freebsd GOARCH=amd64
+        - darwin_arm64:GOOS=darwin GOARCH=arm64
+        - darwin_x86_64:GOOS=darwin GOARCH=amd64
     TARGET_FOLDER: build
 
     SOURCE_FOLDER:
@@ -24,35 +35,59 @@ vars:
     GIT_COMMIT_HASH:
         sh: git rev-parse HEAD
 
+    CURDIR:
+        sh: pwd
+
 tasks:
     default:
-        desc: default task, test and build
         cmds:
             - task: test
-            - task: build
+            - task: buildall
+
+    buildall:
+        desc: build all architectures in build list
+        cmds:
+            - |
+                {{range $i, $line := .ARCHS_TO_BUILD | splitLines}}
+                    {{if $line}}task build ta="{{$line | regexFind "GOOS.*" }}" tf="{{$line | regexFind "[0-9a-z_+]+" }}"{{end}}
+                {{end}}
+                find build/ -type f | sort | xargs md5sum
 
     build:
-        desc: build using simple 'go build'
+        desc: build binary, also called by buildall
         cmds:
-            - cmd: mkdir -p $(pwd)/{{.TARGET_FOLDER}}
+            - cmd: mkdir -p $(pwd)/{{.TARGET_FOLDER}}/{{.tf}}
             - cmd: >-
-                CGO_ENABLED=0
-                go build -o $(pwd)/{{.TARGET_FOLDER}}/{{.APP_NAME}}
+                CGO_ENABLED=0 {{.ta}}
+                go build -o $(pwd)/{{.TARGET_FOLDER}}/{{.tf}}/{{.APP_NAME}}
                 -ldflags "-s -w -X 'main.BUILDTAGS={
                 _subversion: {{.GIT_COMMIT_NO}}, Author: {{.AUTHOR}},
                 Build date: {{.DATE}}, Git hash: {{.GIT_COMMIT_HASH}}
                 }'"
                 src/*.go
-            - cmd: file $(pwd)/build/fprint
-    test:
-        desc: run tests
-        cmds:
-            - cmd: go test -cover -bench=. {{.SOURCE_FOLDER}}/*.go
+            - cmd: file $(pwd)/{{.TARGET_FOLDER}}/{{.tf}}/{{.APP_NAME}}
 
-    xbuild:
-        desc: extended build utilising my personal build script 'bob'
+    test:
         cmds:
             - cmd: >-
-                bob -b V -c
-                -l '_subversion: {{.GIT_COMMIT_NO}}, Author: {{.AUTHOR}},
-                Build date: {{.DATE}}, Git hash: {{.GIT_COMMIT_HASH}}'
+                go test
+                -trace go.trace -race -cover -bench=.
+                {{.SOURCE_FOLDER}}/*.go
+
+    deploy:
+        cp -rpf build/* ${HOME}/tools/arch/mybins/
+
+    mod:
+        desc: update go modules, add submodules to go root
+        cmds:
+            - cmd: if [[ ! -f go.mod ]]; then go mod init {{.APP_NAME}}; fi
+            - cmd: go mod tidy
+            - cmd: mkdir -p "${GOROOT}/src/{{.APP_NAME}}"
+            - cmd: >-
+                ln -fs
+                "{{.CURDIR}}/src/logging"
+                "${GOROOT}/src/{{.APP_NAME}}/logging"
+
+    test_ghwf:
+        cmds:
+            - cmd: act -s ARTIFACTORY_AUTH_TOKEN=${ARTIFACTORY_AUTH_TOKEN}
