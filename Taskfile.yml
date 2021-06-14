@@ -30,7 +30,7 @@ vars:
         sh: date
 
     GIT_COMMIT_NO:
-        sh: git rev-list --branches master --count
+        sh: git rev-list "origin/master" --count
 
     GIT_COMMIT_HASH:
         sh: git rev-parse HEAD
@@ -58,6 +58,7 @@ tasks:
     build:
         desc: build binary, also called by buildall
         cmds:
+            - cmd: pwd
             - cmd: mkdir -p $(pwd)/{{.TARGET_FOLDER}}/{{.tf}}
             - cmd: >-
                 CGO_ENABLED=0 {{.ta}}
