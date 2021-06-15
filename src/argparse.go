@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path"
 	"regexp"
 	"strings"
 
@@ -17,8 +18,14 @@ var (
 )
 
 var CLI struct {
-	Temp        string `help:"colour temp or preset to set" arg default:6500k`
+	Temp        string `help:"colour temp or preset to set" arg default:6500`
 	Presets     bool   `help:"list available presets" short:p`
+	Auto        bool   `help:"auto set temp for default location" short:a`
+	Min         int    `help:"auto mode minimum" short:m default:3000`
+	Max         int    `help:"auto mode maximum" short:m default:6000`
+	Location    string `help:"custom location, currently supported capitals (i.e. london, paris)" short:t default:Berlin`
+	LogFile     string `help:"log file" short:l default:${logfile}`
+	Repeat      bool   `help:"keep running and auto adjust continuously" short:r`
 	VersionFlag bool   `help:"display version" short:V`
 }
 
@@ -31,6 +38,9 @@ func parseArgs() {
 			Compact: true,
 			Summary: true,
 		}),
+		kong.Vars{
+			"logfile": path.Join(os.TempDir(), alnum(appName)+".log"),
+		},
 	)
 	_ = ctx.Run()
 

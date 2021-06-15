@@ -1,9 +1,16 @@
 package main
 
 import (
+	"path/filepath"
 	"sort"
 	"strings"
 )
+
+func absPath(str string) string {
+	p, err := filepath.Abs(str)
+	lg.LogIfErrFatal(err, "Invalid file path %q", str)
+	return p
+}
 
 func mapKeysToString(m map[string]int) string {
 	hackMap, hackKeys := sortMapHack(m)

@@ -33,12 +33,10 @@ func (m *Temp) Set(s string) (t Temp, err error) {
 	} else {
 
 		i, err := strconv.Atoi(s)
-		if err != nil {
-			return t, fmt.Errorf("can not parse int")
-		}
+		lg.LogIfErr(err, "Can not parse string to int %d", s)
 		if i < presets["minimal"] || i > presets["maximal"] {
 			return t, fmt.Errorf(
-				"temp out of range, value needs to be between %v and %v",
+				"Temp out of range, value needs to be between %v and %v",
 				presets["minimal"], presets["maximal"],
 			)
 		}
@@ -60,13 +58,17 @@ func listPresets() {
 
 }
 
-func setTemp() {
+func setTemp(tempInt string) {
 	temp := Temp{}
-	temp, err := temp.Set(CLI.Temp)
+	temp, err := temp.Set(tempInt)
 	if err != nil {
 		fmt.Printf("%q\n", err)
 	} else {
-		fmt.Printf("Set colour temperature %q %v\n", temp.Name, temp.Value)
+		if temp.Name == "manual" {
+			lg.Log("Set colour temp to %d\n", temp.Value)
+		} else {
+			lg.Log("Preset "+temp.Name+", set colour temp %d\n", temp.Value)
+		}
 		Set(temp.Value)
 	}
 }
