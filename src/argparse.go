@@ -18,18 +18,23 @@ var (
 )
 
 var CLI struct {
-	Temp        string `help:"colour temp or preset to set" arg default:6500`
-	Presets     bool   `help:"list available presets" short:p`
-	Auto        bool   `help:"auto set temp for default location" short:a`
-	Min         int    `help:"auto mode minimum" short:m default:3000`
-	Max         int    `help:"auto mode maximum" short:m default:6000`
-	Location    string `help:"custom location, currently supported capitals (i.e. london, paris)" short:t default:Berlin`
-	LogFile     string `help:"log file" short:l default:${logfile}`
-	Repeat      bool   `help:"keep running and auto adjust continuously" short:r`
-	VersionFlag bool   `help:"display version" short:V`
+	Temp         string `help:"colour temp or preset to set" arg default:6500`
+	Presets      bool   `help:"list available presets" short:p`
+	Auto         bool   `help:"auto set temp for default location" short:a`
+	Min          int    `help:"auto mode minimum" short:m default:2500`
+	Max          int    `help:"auto mode maximum" short:m default:6500`
+	Location     string `help:"custom location, currently supported capitals (i.e. london, paris)" short:c default:Berlin`
+	LogFile      string `help:"log file" short:l default:${logfile}`
+	StatusFile   string `help:"status file" short:s default:${statusfile}`
+	Repeat       bool   `help:"keep running and auto adjust continuously" short:r`
+	TickInterval int    `help:"tick interval when repeat enabled, check every x seconds" short:t default:10`
+	VersionFlag  bool   `help:"display version" short:V`
 }
 
 func parseArgs() {
+	an := alnum(appName)
+	fol := path.Join(os.TempDir(), an)
+	os.Mkdir(fol, 0755)
 	ctx := kong.Parse(&CLI,
 		kong.Name(appName),
 		kong.Description(appDescription),
@@ -39,7 +44,8 @@ func parseArgs() {
 			Summary: true,
 		}),
 		kong.Vars{
-			"logfile": path.Join(os.TempDir(), alnum(appName)+".log"),
+			"logfile":    path.Join(fol, an+".log"),
+			"statusfile": path.Join(fol, an+"_status.txt"),
 		},
 	)
 	_ = ctx.Run()

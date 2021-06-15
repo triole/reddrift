@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -29,4 +30,18 @@ func sortMapHack(m map[string]int) (hackMap map[int]string, hackKeys []int) {
 	}
 	sort.Ints(hackKeys)
 	return hackMap, hackKeys
+}
+
+func saveStatusFile(val string) {
+	data := []byte(val)
+	err := ioutil.WriteFile(CLI.StatusFile, data, 0644)
+	lg.LogIfErr(err, "Can not save status file %q", CLI.StatusFile)
+}
+
+func readStatusFile() string {
+	var data []byte
+	var err error
+	data, err = ioutil.ReadFile(CLI.StatusFile)
+	lg.LogIfErr(err, "Can not read status file %q", CLI.StatusFile)
+	return string(data)
 }

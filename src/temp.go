@@ -71,4 +71,5 @@ func setTemp(tempInt string) {
 		}
 		Set(temp.Value)
 	}
+	saveStatusFile(strconv.Itoa(temp.Value))
 }

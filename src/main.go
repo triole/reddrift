@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"sct/capitals"
 	log "sct/logging"
@@ -19,27 +20,24 @@ func main() {
 
 	tempInt := CLI.Temp
 	cap := capitals.Init()
+	loc := cap.GetLocation(CLI.Location)
+
+	if CLI.Repeat == true {
+		c := time.Tick(time.Duration(CLI.TickInterval) * time.Second)
+		for _ = range c {
+			autoAdjust(loc.Coords.Lat, loc.Coords.Lon, fmt.Sprintf("%+v", loc))
+		}
+		os.Exit(0)
+	}
 
 	if CLI.Auto == true {
-		loc := cap.GetLocation(CLI.Location)
-		sp := suncalc.Init(loc.Coords.Lat, loc.Coords.Lon)
-		tempInt = autoCalcTemp(sp.Altitude, CLI.Min, CLI.Max)
-		lg.Log("Location is %+v\n", loc)
+		autoAdjust(loc.Coords.Lat, loc.Coords.Lon, fmt.Sprintf("%+v", loc))
+		os.Exit(0)
 	}
 
 	if CLI.Presets == true {
 		listPresets()
 		os.Exit(0)
-	}
-
-	if CLI.Repeat == true {
-		for {
-			loc := cap.GetLocation(CLI.Location)
-			sp := suncalc.Init(loc.Coords.Lat, loc.Coords.Lon)
-			tempInt = autoCalcTemp(sp.Altitude, CLI.Min, CLI.Max)
-			setTemp(tempInt)
-			time.Sleep(time.Duration(60) * time.Second)
-		}
 	}
 
 	// default action
@@ -56,5 +54,16 @@ func autoCalcTemp(altitude float64, min, max int) (s string) {
 		temp = max
 	}
 	s = strconv.Itoa(temp)
+	return
+}
+
+func autoAdjust(lat, lon float64, loc string) (tempInt string, didChange bool) {
+	sd := suncalc.Init(lat, lon)
+	tempInt = autoCalcTemp(sd.Altitude, CLI.Min, CLI.Max)
+	didChange = readStatusFile() != tempInt
+	if didChange == true {
+		lg.Log("Location is %q\n", loc)
+		setTemp(tempInt)
+	}
 	return
 }
