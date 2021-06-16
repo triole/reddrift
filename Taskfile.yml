@@ -77,6 +77,9 @@ tasks:
             - cmd: file $(pwd)/{{.TARGET_FOLDER}}/{{.tf}}/{{.APP_NAME}}
 
     test:
+        sources:
+            - src/*
+        method: timestamp
         cmds:
             - cmd: >-
                 go test
