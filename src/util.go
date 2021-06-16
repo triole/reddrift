@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"sort"
@@ -46,4 +47,13 @@ func readStatusFile() (temp int) {
 	lg.LogIfErr(err, "Can not read status file %q", CLI.StatusFile)
 	temp, _ = strconv.Atoi(string(content))
 	return
+}
+
+func listPresets() {
+	fmt.Println("\nAvailable presets")
+	hackedMap, hackedKeys := sortMapHack(presets)
+	for _, k := range hackedKeys {
+		fmt.Printf("%v\t%s\n", k, hackedMap[k])
+	}
+	fmt.Printf("\n")
 }

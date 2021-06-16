@@ -10,14 +10,18 @@ import (
 
 var (
 	lg log.Logging
-	ts TempSet
+	ts tempSet
 )
 
 func main() {
+	var err error
 	parseArgs()
 	lg = log.Init(absPath(CLI.LogFile))
 
 	ts.TempName = CLI.Temp
+	if ts.TempName == "6500" {
+		ts.TempName = "default"
+	}
 	ts.Temp, _ = strconv.Atoi(CLI.Temp)
 
 	cap := capitals.Init()
@@ -28,24 +32,35 @@ func main() {
 	ts.Lat = loc.Coords.Lat
 	ts.Lon = loc.Coords.Lon
 
-	if CLI.Repeat == true {
-		c := time.Tick(time.Duration(CLI.TickInterval) * time.Second)
-		for _ = range c {
-			ts = autoAdjust(ts)
-		}
-		os.Exit(0)
-	}
+	ts.ValidPreset = false
+	ts.ValidTempInt = false
 
-	if CLI.Auto == true {
-		ts = autoAdjust(ts)
-		os.Exit(0)
-	}
-
-	if CLI.Presets == true {
+	if CLI.ListPresets == true {
 		listPresets()
 		os.Exit(0)
 	}
 
+	if CLI.ListLocations == true {
+		cap.ListLocations()
+		os.Exit(0)
+	}
+
+	if CLI.Repeat == true {
+		c := time.Tick(time.Duration(CLI.TickInterval) * time.Second)
+		for _ = range c {
+			ts = updateValues(ts)
+			setTemp(ts)
+		}
+	}
+
 	// default action
+	ts = updateValues(ts)
+	if ts.TempName != "default" {
+		temp := Temp{}
+		temp, err = temp.Set(ts.TempName)
+		if err == nil {
+			ts.Temp = temp.Value
+		}
+	}
 	setTemp(ts)
 }

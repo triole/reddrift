@@ -18,18 +18,18 @@ var (
 )
 
 var CLI struct {
-	Temp         string `help:"colour temp or preset to set" arg default:6500`
-	Presets      bool   `help:"list available presets" short:p`
-	Auto         bool   `help:"auto set temp for default location" short:a`
-	Min          int    `help:"auto mode minimum" short:m default:2500`
-	Max          int    `help:"auto mode maximum" short:m default:6500`
-	Location     string `help:"custom location, currently supported capitals (i.e. london, paris)" short:c default:Berlin`
-	LogFile      string `help:"log file" short:l default:${logfile}`
-	StatusFile   string `help:"status file" short:s default:${statusfile}`
-	Repeat       bool   `help:"keep running and auto adjust continuously" short:r`
-	TickInterval int    `help:"tick interval when repeat enabled, check every x seconds" short:t default:10`
-	Force        bool   `help:"force temp adjustment" short:f`
-	VersionFlag  bool   `help:"display version" short:V`
+	Temp          string `help:"colour temp or preset to set" arg default:6500`
+	ListPresets   bool   `help:"list available presets"`
+	Min           int    `help:"auto mode minimum" short:m default:2500`
+	Max           int    `help:"auto mode maximum" short:m default:6500`
+	Location      string `help:"custom location, currently supported capitals (i.e. tokyo, ottawa, london, jakarta...)" short:c default:berlin`
+	ListLocations bool   `help:"list available locations"`
+	LogFile       string `help:"log file" short:l default:${logfile}`
+	StatusFile    string `help:"status file" short:s default:${statusfile}`
+	Repeat        bool   `help:"keep running and auto adjust continuously" short:r`
+	TickInterval  int    `help:"tick interval when repeat enabled, check every x seconds" short:t default:10`
+	Force         bool   `help:"force temp adjustment" short:f`
+	VersionFlag   bool   `help:"display version" short:V`
 }
 
 func parseArgs() {
