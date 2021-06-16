@@ -2,8 +2,8 @@ package main
 
 import (
 	"os"
-	"sct/capitals"
-	log "sct/logging"
+	"reddrift/capitals"
+	log "reddrift/logging"
 	"strconv"
 	"time"
 )

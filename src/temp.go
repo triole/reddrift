@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/dim13/sct/src/suncalc"
+	"reddrift/suncalc"
 )
 
 type Temp struct {

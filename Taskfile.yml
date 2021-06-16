@@ -24,7 +24,7 @@ vars:
         sh: grep -Po "(?<=name\s=\s).*" ~/.gitconfig
 
     APP_NAME:
-        sh: pwd | tr '/' '\n' | tail -1
+        sh: pwd | grep -Po "[^/]+$"
 
     ARCH:
         sh: arch
@@ -71,7 +71,6 @@ tasks:
                 -ldflags "-s -w -X 'main.BUILDTAGS={
                 _subversion: {{.GIT_COMMIT_NO}}, Author: {{.AUTHOR}},
                 Build date: {{.DATE}}, Git hash: {{.GIT_COMMIT_HASH}},
-                Based on: https://github.com/dim13/sct by Dimitri Sokolyuk <demon@dim13.org>
                 }'"
                 src/*.go
             - cmd: file $(pwd)/{{.TARGET_FOLDER}}/{{.tf}}/{{.APP_NAME}}
