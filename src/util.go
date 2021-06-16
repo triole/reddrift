@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -38,10 +39,11 @@ func saveStatusFile(val string) {
 	lg.LogIfErr(err, "Can not save status file %q", CLI.StatusFile)
 }
 
-func readStatusFile() string {
-	var data []byte
+func readStatusFile() (temp int) {
+	var content []byte
 	var err error
-	data, err = ioutil.ReadFile(CLI.StatusFile)
+	content, err = ioutil.ReadFile(CLI.StatusFile)
 	lg.LogIfErr(err, "Can not read status file %q", CLI.StatusFile)
-	return string(data)
+	temp, _ = strconv.Atoi(string(content))
+	return
 }

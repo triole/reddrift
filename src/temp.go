@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"strconv"
+
+	"github.com/dim13/sct/src/suncalc"
 )
 
 var (
@@ -31,7 +33,6 @@ func (m *Temp) Set(s string) (t Temp, err error) {
 			Value: val,
 		}
 	} else {
-
 		i, err := strconv.Atoi(s)
 		lg.LogIfErr(err, "Can not parse string to int %d", s)
 		if i < presets["minimal"] || i > presets["maximal"] {
@@ -58,18 +59,43 @@ func listPresets() {
 
 }
 
-func setTemp(tempInt string) {
+func autoCalcTemp(ts TempSet, min, max int) (temp int) {
+	temp = min
+	al := ts.SunAltitude + 0.3
+	diff := float64(max-min) * (al)
+	temp = min + int(diff)
+	if temp < min {
+		temp = min
+	}
+	if temp > max {
+		temp = max
+	}
+	return
+}
+
+func autoAdjust(ts TempSet) TempSet {
+	sc := suncalc.Init(ts.Lat, ts.Lon)
+
+	ts.SunAltitude = sc.Altitude
+	ts.SunAzimuth = sc.Azimuth
+	ts.LastTemp = readStatusFile()
+	ts.Temp = autoCalcTemp(ts, CLI.Min, CLI.Max)
+
+	if ts.Temp != ts.LastTemp || CLI.Force == true {
+		setTemp(ts)
+	}
+	return ts
+}
+
+func setTemp(ts TempSet) {
 	temp := Temp{}
-	temp, err := temp.Set(tempInt)
+	temp, err := temp.Set(ts.TempName)
+	ts.Temp = temp.Value
 	if err != nil {
 		fmt.Printf("%q\n", err)
 	} else {
-		if temp.Name == "manual" {
-			lg.Log("Set colour temp to %d\n", temp.Value)
-		} else {
-			lg.Log("Preset "+temp.Name+", set colour temp %d\n", temp.Value)
-		}
-		Set(temp.Value)
+		lg.Log("Set to %+v\n", ts)
+		Set(ts.Temp)
 	}
 	saveStatusFile(strconv.Itoa(temp.Value))
 }
