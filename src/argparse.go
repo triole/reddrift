@@ -20,8 +20,8 @@ var (
 var CLI struct {
 	Temp          string `help:"colour temp or preset to set" arg default:6500`
 	ListPresets   bool   `help:"list available presets"`
-	Min           int    `help:"auto mode minimum" short:m default:2500`
-	Max           int    `help:"auto mode maximum" short:m default:6500`
+	TempMax       int    `help:"auto mode maximum" short:m default:6500`
+	TempMin       int    `help:"auto mode minimum" short:n default:2500`
 	Location      string `help:"custom location, currently supported capitals (i.e. tokyo, ottawa, london, jakarta...)" short:c default:berlin`
 	ListLocations bool   `help:"list available locations"`
 	LogFile       string `help:"log file" short:l default:${logfile}`
