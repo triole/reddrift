@@ -45,14 +45,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	if CLI.Repeat == true {
-		c := time.Tick(time.Duration(CLI.TickInterval) * time.Second)
-		for _ = range c {
-			ts = updateValues(ts)
-			setTemp(ts)
-		}
-	}
-
 	// default action
 	ts = updateValues(ts)
 	if ts.TempName != "default" {
@@ -63,4 +55,12 @@ func main() {
 		}
 	}
 	setTemp(ts)
+
+	if CLI.Repeat == true {
+		c := time.Tick(time.Duration(CLI.TickInterval) * time.Second)
+		for _ = range c {
+			ts = updateValues(ts)
+			setTemp(ts)
+		}
+	}
 }
