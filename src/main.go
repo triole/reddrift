@@ -45,8 +45,13 @@ func main() {
 		os.Exit(0)
 	}
 
+	if CLI.DayCycle == true {
+		showDayCycle(ts)
+		os.Exit(0)
+	}
+
 	// default action
-	ts = updateValues(ts)
+	ts = updateValues(ts, time.Now())
 	if ts.TempName != "default" {
 		temp := Temp{}
 		temp, err = temp.Set(ts.TempName)
@@ -59,7 +64,7 @@ func main() {
 	if CLI.Repeat == true {
 		c := time.Tick(time.Duration(CLI.TickInterval) * time.Second)
 		for _ = range c {
-			ts = updateValues(ts)
+			ts = updateValues(ts, time.Now())
 			setTemp(ts)
 		}
 	}

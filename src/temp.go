@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"reddrift/suncalc"
 )
@@ -37,9 +38,9 @@ func (m *Temp) Set(s string) (t Temp, err error) {
 	return
 }
 
-func updateValues(ts tempSet) (r tempSet) {
+func updateValues(ts tempSet, t time.Time) (r tempSet) {
 	r = ts
-	sc := suncalc.Init(ts.Lat, ts.Lon)
+	sc := suncalc.Init(ts.Lat, ts.Lon, t)
 	r.SunAltitude = sc.Altitude
 	r.SunAzimuth = sc.Azimuth
 	r.LastTemp = readStatusFile()
@@ -49,7 +50,7 @@ func updateValues(ts tempSet) (r tempSet) {
 
 func autoCalcTemp(ts tempSet, min, max int) (temp int) {
 	temp = min
-	diff := float64(max-min) * (ts.SunAltitude + 0.3)
+	diff := float64(max-min) * (ts.SunAltitude + CLI.Postpone)
 	temp = min + int(diff)
 	if temp < min {
 		temp = min
@@ -81,4 +82,16 @@ func setTemp(ts tempSet) {
 		Set(ts.Temp)
 		saveStatusFile(strconv.Itoa(ts.Temp))
 	}
+}
+
+func showDayCycle(ts tempSet) {
+	fmt.Printf("\n%s %f %f\n\n", ts.Capital, ts.Lat, ts.Lon)
+	t := time.Now()
+	t = time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, t.Nanosecond(), t.Location())
+	for i := 0; i <= 47; i++ {
+		ts = updateValues(ts, t)
+		fmt.Printf("%s\t%+f\t%d\n", t.Format("2006-01-02 15:04"), ts.SunAltitude, ts.Temp)
+		t = t.Add(time.Duration(30) * time.Minute)
+	}
+	fmt.Println("")
 }

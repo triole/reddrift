@@ -16,8 +16,8 @@ type SunData struct {
 }
 
 // Init does exactly what it says
-func Init(lat, lon float64) (sd SunData) {
-	sd.Time = time.Now()
+func Init(lat, lon float64, t time.Time) (sd SunData) {
+	sd.Time = t
 	sd.Lat = lat
 	sd.Lon = lon
 	r := suncalc.GetPosition(sd.Time, sd.Lat, sd.Lon)
