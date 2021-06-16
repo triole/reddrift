@@ -1,9 +1,26 @@
+// Copyright (c) 2016 Dimitri Sokolyuk <demon@dim13.org>
+// https://github.com/dim13/sct
+
 package main
 
 import (
 	"github.com/BurntSushi/xgb"
 	"github.com/BurntSushi/xgb/randr"
 	"github.com/BurntSushi/xgb/xproto"
+)
+
+var (
+	presets = map[string]int{
+		"minimal":     1000,
+		"candle":      2300,
+		"tungsten":    2700,
+		"halogen":     3400,
+		"fluorescent": 4200,
+		"daylight":    5000,
+		"default":     6500,
+		"upallnight":  8000,
+		"maximal":     10000,
+	}
 )
 
 type Whitepoints []struct{ R, G, B float64 }
