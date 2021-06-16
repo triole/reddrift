@@ -28,6 +28,7 @@ var CLI struct {
 	StatusFile   string `help:"status file" short:s default:${statusfile}`
 	Repeat       bool   `help:"keep running and auto adjust continuously" short:r`
 	TickInterval int    `help:"tick interval when repeat enabled, check every x seconds" short:t default:10`
+	Force        bool   `help:"force temp adjustment" short:f`
 	VersionFlag  bool   `help:"display version" short:V`
 }
 
