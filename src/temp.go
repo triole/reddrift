@@ -50,7 +50,7 @@ func updateValues(ts tempSet, t time.Time) (r tempSet) {
 
 func autoCalcTemp(ts tempSet, min, max int) (temp int) {
 	temp = min
-	diff := float64(max-min) * (ts.SunAltitude + CLI.Postpone)
+	diff := float64(max-min) * (ts.SunAltitude + ts.SunAltitude)
 	temp = min + int(diff)
 	if temp < min {
 		temp = min
