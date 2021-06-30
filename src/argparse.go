@@ -18,19 +18,20 @@ var (
 )
 
 var CLI struct {
-	Temp          string `help:"colour temp or preset to set" arg default:6500`
-	ListPresets   bool   `help:"list available presets"`
-	TempMax       int    `help:"auto mode maximum" short:m default:6500`
-	TempMin       int    `help:"auto mode minimum" short:n default:3000`
-	Location      string `help:"custom location, currently supported capitals (i.e. tokyo, ottawa, london, jakarta...)" short:c default:berlin`
-	ListLocations bool   `help:"list available locations"`
-	LogFile       string `help:"log file" short:l default:${logfile}`
-	StatusFile    string `help:"status file" short:s default:${statusfile}`
-	Repeat        bool   `help:"keep running and auto adjust continuously" short:r`
-	TickInterval  int    `help:"tick interval when repeat enabled, check every x seconds" short:t default:10`
-	Force         bool   `help:"force temp adjustment" short:f`
-	DayCycle      bool   `help:"print how a day cycle would look with the applied settings"`
-	VersionFlag   bool   `help:"display version" short:V`
+	Temp          string  `help:"colour temp or preset to set" arg default:6500`
+	ListPresets   bool    `help:"list available presets"`
+	TempMax       int     `help:"auto mode maximum" short:m default:6500`
+	TempMin       int     `help:"auto mode minimum" short:n default:3000`
+	CurveModifier float64 `help:"curve modifier, positive float, a higher value leads to shorter temperature transitions, use --day-cycle to get an impression what it does" short:u default:0.5`
+	Location      string  `help:"custom location, currently supported capitals (i.e. tokyo, ottawa, london, jakarta...)" short:c default:berlin`
+	ListLocations bool    `help:"list available locations"`
+	LogFile       string  `help:"log file" short:l default:${logfile}`
+	StatusFile    string  `help:"status file" short:s default:${statusfile}`
+	Repeat        bool    `help:"keep running and auto adjust continuously" short:r`
+	TickInterval  int     `help:"tick interval when repeat enabled, check every x seconds" short:t default:10`
+	Force         bool    `help:"force temp adjustment" short:f`
+	DayCycle      bool    `help:"print how a day cycle would look with the applied settings"`
+	VersionFlag   bool    `help:"display version" short:V`
 }
 
 func parseArgs() {

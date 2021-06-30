@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"os"
 	"reddrift/capitals"
 	log "reddrift/logging"
@@ -32,6 +33,9 @@ func main() {
 	ts.Lat = loc.Coords.Lat
 	ts.Lon = loc.Coords.Lon
 
+	ts.CurveModifier = CLI.CurveModifier
+	ts.CurveModList = makeCurveModList()
+
 	ts.ValidPreset = false
 	ts.ValidTempInt = false
 
@@ -54,7 +58,7 @@ func main() {
 	ts = updateValues(ts, time.Now())
 	if ts.TempName != "default" {
 		temp := Temp{}
-		temp, err = temp.Set(ts.TempName)
+		temp, err = temp.set(ts.TempName)
 		if err == nil {
 			ts.Temp = temp.Value
 		}
@@ -68,4 +72,18 @@ func main() {
 			setTemp(ts)
 		}
 	}
+}
+
+func makeCurveModList() (fl []float64) {
+	frag := ts.CurveModifier / 4
+	fl = append(fl, round(ts.CurveModifier-(2*frag)))
+	fl = append(fl, round(ts.CurveModifier-frag))
+	fl = append(fl, round(ts.CurveModifier))
+	fl = append(fl, round(ts.CurveModifier+frag))
+	fl = append(fl, round(ts.CurveModifier+(2*frag)))
+	return
+}
+
+func round(x float64) float64 {
+	return math.Round(x*100) / 100
 }
