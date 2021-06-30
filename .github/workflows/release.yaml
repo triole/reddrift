@@ -21,13 +21,14 @@ jobs:
                     go-version: 1.16
             -
                 name: Install task
-                run: .github/sh/install_task.sh
+                env:
+                    URL: go-task/task/releases/latest
+                    GREP_SCHEME: "(?<=href\\=\").*linux_amd64.tar.gz"
+                    TARGET_FOLDER: /home/runner/.local/bin
+                run: curl https://raw.githubusercontent.com/triole/ghsh/master/install_from_github.sh | bash
             -
                 name: Make github config
-                run: |
-                    echo [user] >> ~/.gitconfig
-                    echo name = olaf michaelis >> ~/.gitconfig
-                    echo email = o.mic@web.de >> ~/.gitconfig
+                run: curl https://raw.githubusercontent.com/triole/ghsh/master/make_github_config.sh | bash
             -
                 name: Run builder
                 env:
@@ -37,11 +38,13 @@ jobs:
                     /home/runner/.local/bin/task task_folder=/home/runner/.local/bin/
             -
                 name: Gzip assets
-                run: .github/sh/zip_builds.sh
+                env:
+                    BASE_DIR: build
+                run: curl https://raw.githubusercontent.com/triole/ghsh/master/compress_builds.sh | bash
             -
                 name: Upload release binaries
                 uses: alexellis/upload-assets@0.3.0
                 env:
                     GITHUB_TOKEN: ${{ github.token }}
                 with:
-                    asset_paths: '["/tmp/gh_workflow_assets/*"]'
+                    asset_paths: '["/tmp/assets/*"]'
